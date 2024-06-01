@@ -1,0 +1,33 @@
+{
+    "name": "abeliani/asset-manager",
+    "description": "Fast and simple managing assets bundles",
+    "homepage": "https://treecode.ru",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anatolii Belianin",
+            "email": "belianianatoli@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Abeliani\\AssetManager\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Abeliani\\AssetManager\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^8.1",
+        "abeliani/css-js-html-optimizer": "^0.1"
+    },
+    "require-dev": {
+        "codeception/codeception": "^4.1",
+        "codeception/module-asserts": "^2.0",
+        "codeception/module-filesystem": "^2.0"
+    }
+}

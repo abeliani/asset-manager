@@ -211,7 +211,7 @@ final class AssetManager implements AssetManagerInterface
 
             $bundleFilePath = "{$bundleDir}/{$srcInfo['basename']}";
 
-            if (!file_exists($bundleFilePath) || ($this->buildTime > filemtime($bundleFilePath))) {
+            if (!file_exists($bundleFilePath) || (filemtime($bundleFilePath) > $this->buildTime)) {
                 $bundlePath = $bundle->name() ? ($bundle->getPath() . "/{$bundle->name()}/") : $bundle->getPath();
 
                 if (!$bundlePath) {

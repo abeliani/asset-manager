@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Abeliani\AssetManager\Bundle;
 
-use Abeliani\AssetManager\Tag\TagInterface;
+use Abeliani\AssetManager\Tag\TagConfigInterface;
 
 abstract class Bundle implements BundleInterface
 {
@@ -49,7 +49,7 @@ abstract class Bundle implements BundleInterface
     /**
      * @inheritDoc
      */
-    public function getTags(): TagInterface|\SplFixedArray|array
+    public function getTags(): TagConfigInterface|\SplFixedArray|array
     {
         return [];
     }

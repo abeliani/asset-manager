@@ -16,7 +16,8 @@ use Abeliani\AssetManager\AssetManagerInterface;
 use Abeliani\AssetManager\Bundle\BundleInterface;
 use Abeliani\AssetManager\Tag\Css;
 use Abeliani\AssetManager\Tag\Js;
-use Abeliani\AssetManager\Tag\TagInterface;
+use Abeliani\AssetManager\Tag\TagConfigInterface;
+use Abeliani\AssetManager\Tag\TagExtractorInterface;
 use Codeception\Test\Unit;
 
 class AssetManagerCategoryTest extends Unit
@@ -44,21 +45,21 @@ class AssetManagerCategoryTest extends Unit
         $tagCommon = new Css('/css/style1.css');
         $bundle = $this->createMock(BundleInterface::class);
         $bundle->method('getPath')->willReturn(codecept_data_dir('concrete'));
-        $bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tagCommon);
+        $bundle->method('getTags')->willReturnCallback(static fn(): TagConfigInterface => $tagCommon);
 
         $this->manager->addBundle($bundle);
 
         $tagTop = new Css('/css/style2.css');
         $bundle = $this->createMock(BundleInterface::class);
         $bundle->method('getPath')->willReturn(codecept_data_dir('concrete'));
-        $bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tagTop);
+        $bundle->method('getTags')->willReturnCallback(static fn(): TagConfigInterface => $tagTop);
 
         $this->manager->addBundle($bundle, AssetManagerInterface::CATEGORY_TOP);
 
         $tagBottom = new Js('/js/script1.js');
         $bundle = $this->createMock(BundleInterface::class);
         $bundle->method('getPath')->willReturn(codecept_data_dir('concrete'));
-        $bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tagBottom);
+        $bundle->method('getTags')->willReturnCallback(static fn(): TagConfigInterface => $tagBottom);
 
         $this->manager->addBundle($bundle, AssetManagerInterface::CATEGORY_BOTTOM);
 

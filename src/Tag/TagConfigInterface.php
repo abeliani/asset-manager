@@ -11,25 +11,14 @@
 
 namespace Abeliani\AssetManager\Tag;
 
-interface TagInterface
+interface TagConfigInterface
 {
-    /**
-     * Render a tag
-     * An example:
-     *
-     *      <script src="script.js" async></script>
-     *
-     * @param string $src
-     * @return string
-     */
-    public function render(string $src): string;
-
     /**
      * If called optimization filters will be applied
      *
-     * @return TagInterface
+     * @return TagConfigInterface
      */
-    public function minimize(): self;
+    public function minimize(): TagConfigInterface;
 
     /**
      * If is relative a host will not be added
@@ -38,9 +27,9 @@ interface TagInterface
      *      /asset/qwer1/style.css
      *      //host.local/asset/qwer1/style.css
      *
-     * @return TagInterface
+     * @return TagConfigInterface
      */
-    public function relative(): self;
+    public function relative(): TagConfigInterface;
 
     /**
      * Add query part to a tag with timestamp
@@ -48,9 +37,9 @@ interface TagInterface
      *
      *      /asset/qwer1/style.css?ts=12345678
      *
-     * @return TagInterface
+     * @return TagConfigInterface
      */
-    public function withTimeStamp(): self;
+    public function withTimeStamp(): TagConfigInterface;
 
     /**
      * Add attribute to tag
@@ -66,33 +55,15 @@ interface TagInterface
      *      // ...async>
      * @param string $name
      * @param mixed|null $value
-     * @return self
+     * @return TagConfigInterface
      */
-    public function addAttr(string $name, mixed $value = null): self;
+    public function addAttr(string $name, mixed $value = null): TagConfigInterface;
 
     /**
-     * @return string[]|string
+     * Extract tag data to render
+     *
+     * @param TagExtractor $extractor
+     * @return void
      */
-    public function getSrc(): array|string;
-
-    /**
-     * @return bool
-     */
-    public function isRelative(): bool;
-
-    /**
-     * @return bool
-     */
-    public function isOptimize(): bool;
-
-    /**
-     * @return bool
-     */
-    public function isWithTimestamp(): bool;
-
-    /**
-     * @param TagHandler $processor
-     * @return string|null
-     */
-    public function handle(TagHandler $processor): ?string;
+    public function extractor(TagExtractor $extractor): void;
 }

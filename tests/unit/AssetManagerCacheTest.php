@@ -14,7 +14,7 @@ namespace Abeliani\AssetManager\Tests\unit;
 use Abeliani\AssetManager\AssetManager;
 use Abeliani\AssetManager\Bundle\BundleInterface;
 use Abeliani\AssetManager\Tag\Css;
-use Abeliani\AssetManager\Tag\TagInterface;
+use Abeliani\AssetManager\Tag\TagConfigInterface;
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -40,7 +40,7 @@ class AssetManagerCacheTest extends Unit
 
         $bundle = $this->createMock(BundleInterface::class);
         $bundle->method('getTags')
-            ->willReturnCallback(static fn(): TagInterface => new Css('/css/style1.css'));
+            ->willReturnCallback(static fn(): TagConfigInterface => new Css('/css/style1.css'));
         $bundle->method('getPath')
             ->willReturn(codecept_data_dir('concrete'));
 
@@ -66,7 +66,7 @@ class AssetManagerCacheTest extends Unit
 
         $bundle = $this->createMock(BundleInterface::class);
         $bundle->method('getTags')
-            ->willReturnCallback(static fn(): TagInterface => new Css('/css/style1.css'));
+            ->willReturnCallback(static fn(): TagConfigInterface => (new Css('/css/style1.css')));
         $bundle->method('getPath')
             ->willReturn(codecept_data_dir('concrete'));
 

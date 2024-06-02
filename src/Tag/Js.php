@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Abeliani\AssetManager\Tag;
 
-final class Js extends Tag
+final class Js extends TagConfigure
 {
     protected function initProto(): void
     {

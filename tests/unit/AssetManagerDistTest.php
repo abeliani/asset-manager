@@ -14,7 +14,7 @@ namespace Abeliani\AssetManager\Tests\unit;
 use Abeliani\AssetManager\AssetManager;
 use Abeliani\AssetManager\Bundle\BundleInterface;
 use Abeliani\AssetManager\Tag\Css;
-use Abeliani\AssetManager\Tag\TagInterface;
+use Abeliani\AssetManager\Tag\TagConfigInterface;
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -53,7 +53,7 @@ class AssetManagerDistTest extends Unit
     public function testCopyDist(): void
     {
         $tag = new Css('/css/style2.css');
-        $this->bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tag);
+        $this->bundle->method('getTags')->willReturnCallback(static fn(): TagConfigInterface => $tag);
         $this->bundle->method('getDistPaths')->willReturn(['/css/dist']);
         $this->manager->addBundle($this->bundle);
 
@@ -64,7 +64,7 @@ class AssetManagerDistTest extends Unit
     public function testCopyDistNotOptimized(): void
     {
         $tag = new Css('/css/style2.css');
-        $this->bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tag);
+        $this->bundle->method('getTags')->willReturnCallback(static fn(): TagConfigInterface => $tag);
         $this->bundle->method('getDistPaths')->willReturn(['css']);
         $this->manager->addBundle($this->bundle);
 

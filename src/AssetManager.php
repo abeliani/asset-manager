@@ -14,8 +14,9 @@ declare(strict_types=1);
 namespace Abeliani\AssetManager;
 
 use Abeliani\AssetManager\Bundle\BundleInterface;
+use Abeliani\AssetManager\Tag\TagExtractor;
 use Abeliani\AssetManager\Tag\TagHandler;
-use Abeliani\AssetManager\Tag\TagInterface;
+use Abeliani\AssetManager\Tag\TagExtractorInterface;
 use FilesystemIterator;
 
 final class AssetManager implements AssetManagerInterface
@@ -102,12 +103,12 @@ final class AssetManager implements AssetManagerInterface
             $bundlePath = $bundle->name() ? ($bundle->getPath() . "/{$bundle->name()}") : $bundle->getPath();
             array_walk($distPaths, fn (&$src) => $src = sprintf('%s/%s', $bundlePath, $src));
 
-            foreach ($this->processBundle($bundle, $processed) as $bundleFilePath => $tag) {
+            foreach ($this->processBundle($bundle, $processed) as $bundleFilePath => $tagExtractor) {
                 $publicUrl = str_replace(dirname($this->buildFilePath, 2), '', $bundleFilePath);
-                $itemPath = $tag->isRelative() ? $publicUrl : sprintf('//%s%s', $this->host, $publicUrl);
-                $itemPath = $tag->isWithTimestamp() ? sprintf('%s?ts=%d', $itemPath, time()) : $itemPath;
+                $itemPath = $tagExtractor->isRelative() ? $publicUrl : sprintf('//%s%s', $this->host, $publicUrl);
+                $itemPath = $tagExtractor->isWithTimestamp() ? sprintf('%s?ts=%d', $itemPath, time()) : $itemPath;
 
-                echo $tag->render($itemPath), PHP_EOL;
+                echo $tagExtractor->render($itemPath), PHP_EOL;
             }
 
             foreach ($distPaths as $dist) {
@@ -172,7 +173,7 @@ final class AssetManager implements AssetManagerInterface
     /**
      * @param BundleInterface $bundle
      * @param array $processed
-     * @return \Generator<string, TagInterface>
+     * @return \Generator<string, TagExtractorInterface>
      */
     private function processBundle(BundleInterface $bundle, array &$processed): \Generator
     {
@@ -201,8 +202,10 @@ final class AssetManager implements AssetManagerInterface
             $tags = $bundle->getTags();
         }
 
+        $te = new TagExtractor;
         foreach ($tags as $tag) {
-            $src = is_string($tag->getSrc()) ? $tag->getSrc() : $tag->getSrc()[0];
+            $tag->extractor($extractor = clone $te);
+            $src = is_string($extractor->getSrc()) ? $extractor->getSrc() : $extractor->getSrc()[0];
             $srcInfo = pathinfo($src);
             $bundleDir = sprintf('%s%s', $this->getAssertsPath($bundleClass), $srcInfo['dirname']);
 
@@ -219,7 +222,7 @@ final class AssetManager implements AssetManagerInterface
                     throw new \RuntimeException(sprintf('Filed to determine path of %s', get_class($bundle)));
                 }
 
-                if (!$handled = $tag->handle(new TagHandler($bundlePath))) {
+                if (!$handled = $extractor->handle(new TagHandler($bundlePath))) {
                     continue;
                 }
 
@@ -228,7 +231,7 @@ final class AssetManager implements AssetManagerInterface
                 }
             }
 
-            yield $bundleFilePath => $tag;
+            yield $bundleFilePath => $extractor;
         }
     }
 

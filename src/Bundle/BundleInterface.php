@@ -11,14 +11,14 @@
 
 namespace Abeliani\AssetManager\Bundle;
 
-use Abeliani\AssetManager\Tag\TagInterface;
+use Abeliani\AssetManager\Tag\TagConfigInterface;
 
 interface BundleInterface
 {
     /**
-     * @return TagInterface|\SplFixedArray<TagInterface>|TagInterface[]
+     * @return TagConfigInterface|\SplFixedArray<TagConfigInterface>|TagConfigInterface[]
      */
-    public function getTags(): TagInterface|\SplFixedArray|array;
+    public function getTags(): TagConfigInterface|\SplFixedArray|array;
 
     public function name(): string;
 

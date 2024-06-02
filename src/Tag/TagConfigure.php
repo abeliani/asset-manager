@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Abeliani\AssetManager\Tag;
 
-abstract class Tag implements TagInterface
+abstract class TagConfigure implements TagConfigInterface
 {
     protected ProtoTag $protoTag;
 
@@ -36,14 +36,6 @@ abstract class Tag implements TagInterface
         $this->protoTag->addAttribute($name, $value);
 
         return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function render(string $src): string
-    {
-        return $this->protoTag->render($src);
     }
 
     /**
@@ -77,31 +69,17 @@ abstract class Tag implements TagInterface
     }
 
     /**
-     * @throws \Exception
+     * @inheritDoc
      */
-    public function handle(TagHandler $processor): ?string
+    public function extractor(TagExtractor $extractor): void
     {
-        return $processor($this);
-    }
-
-    public function getSrc(): string|array
-    {
-        return $this->src;
-    }
-
-    public function isOptimize(): bool
-    {
-        return $this->minimize;
-    }
-
-    public function isRelative(): bool
-    {
-        return $this->relative;
-    }
-
-    public function isWithTimestamp(): bool
-    {
-        return $this->withTimestamp;
+        $extractor
+            ->setSrc($this->src)
+            ->setProtoTag($this->protoTag)
+            ->setMinimize($this->minimize)
+            ->setRelative($this->relative)
+            ->setTagClass(static::class)
+            ->setWithTimestamp($this->withTimestamp);
     }
 
     abstract protected function initProto(): void;

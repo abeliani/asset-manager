@@ -25,9 +25,9 @@ class TagHandler
     /**
      * @throws \Exception
      */
-    public function __invoke(TagInterface $tag): ?string
+    public function __invoke(TagExtractorInterface $tag): ?string
     {
-        switch (get_class($tag)) {
+        switch ($tag->getTagClass()) {
             case Tag\Js::class:
                 $document = Js\Parser\Document::class;
                 $optimizer = Js\Optimizer\Optimizer::class;

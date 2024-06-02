@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Abeliani\AssetManager\Tag;
 
-final class Css extends Tag
+final class Css extends TagConfigure
 {
-    public function initProto(): void
+    protected function initProto(): void
     {
         $this->protoTag = (new ProtoTag('link', 'href'))->addAttribute( 'rel', 'stylesheet');
     }

@@ -15,7 +15,7 @@ use Abeliani\AssetManager\AssetManager;
 use Abeliani\AssetManager\Bundle\BundleInterface;
 use Abeliani\AssetManager\Tag\Css;
 use Abeliani\AssetManager\Tag\Js;
-use Abeliani\AssetManager\Tag\TagInterface;
+use Abeliani\AssetManager\Tag\TagConfigInterface;
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -55,7 +55,7 @@ class AssetManagerMinimizeTest extends Unit
     {
         $tag = new Css('/css/style2.css');
 
-        $this->bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tag);
+        $this->bundle->method('getTags')->willReturnCallback(static fn(): TagConfigInterface => $tag);
         $this->manager->addBundle($this->bundle);
 
         $this->assertStringContainsString('/css/style2.css', $this->manager->process());
@@ -68,7 +68,7 @@ class AssetManagerMinimizeTest extends Unit
     {
         $tagMinimized = (new Css('/css/style2.css'))->minimize();
 
-        $this->bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tagMinimized);
+        $this->bundle->method('getTags')->willReturnCallback(static fn(): TagConfigInterface => $tagMinimized);
         $this->manager->addBundle($this->bundle);
 
         $this->assertStringContainsString('/css/style2.css', $this->manager->process());
@@ -81,7 +81,7 @@ class AssetManagerMinimizeTest extends Unit
     {
         $tag = new Js('/js/plugin.js');
 
-        $this->bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tag);
+        $this->bundle->method('getTags')->willReturnCallback(static fn(): TagConfigInterface => $tag);
         $this->manager->addBundle($this->bundle);
 
         $this->assertStringContainsString('/js/plugin.js', $this->manager->process());
@@ -94,7 +94,7 @@ class AssetManagerMinimizeTest extends Unit
     {
         $tagMinimized = (new Js('/js/plugin.js'))->minimize();
 
-        $this->bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tagMinimized);
+        $this->bundle->method('getTags')->willReturnCallback(static fn(): TagConfigInterface => $tagMinimized);
         $this->manager->addBundle($this->bundle);
 
         $this->assertStringContainsString('/js/plugin.js', $this->manager->process());

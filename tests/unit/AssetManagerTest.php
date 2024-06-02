@@ -15,7 +15,7 @@ use Abeliani\AssetManager\AssetManager;
 use Abeliani\AssetManager\Bundle\BundleInterface;
 use Abeliani\AssetManager\Tag\Css;
 use Abeliani\AssetManager\Tag\Js;
-use Abeliani\AssetManager\Tag\TagInterface;
+use Abeliani\AssetManager\Tag\TagConfigInterface;
 use Codeception\Test\Unit;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -55,7 +55,7 @@ class AssetManagerTest extends Unit
     {
         $cssPath = '/css/style1.css';
         $this->bundle->method('getTags')
-            ->willReturnCallback(static fn(): TagInterface => new Css($cssPath));
+            ->willReturnCallback(static fn(): TagConfigInterface => new Css($cssPath));
 
         $this->manager->addBundle($this->bundle);
 
@@ -72,7 +72,7 @@ class AssetManagerTest extends Unit
         $secondCssPath = '/css/style2.css';
 
         $this->bundle->method('getTags')
-            ->willReturnCallback(static fn(): TagInterface => new Css($firstCssPath, $secondCssPath));
+            ->willReturnCallback(static fn(): TagConfigInterface => new Css($firstCssPath, $secondCssPath));
 
         $this->manager->addBundle($this->bundle);
 
@@ -86,7 +86,7 @@ class AssetManagerTest extends Unit
     public function testSetAttributeToTag(): void
     {
         $this->bundle->method('getTags')->willReturnCallback(
-                static fn(): TagInterface => (new Css('/css/style1.css'))->addAttr('media', 'print')
+                static fn(): TagConfigInterface => (new Css('/css/style1.css'))->addAttr('media', 'print')
         );
         $this->manager->addBundle($this->bundle);
 
@@ -100,7 +100,7 @@ class AssetManagerTest extends Unit
         $scripts = [$resultScriptPath, '/js/script2.js'];
 
         $this->bundle->method('getTags')
-            ->willReturnCallback(static fn(): TagInterface => (new Js(...$scripts)));
+            ->willReturnCallback(static fn(): TagConfigInterface => (new Js(...$scripts)));
 
         $this->manager->addBundle($this->bundle);
 
@@ -150,7 +150,7 @@ class AssetManagerTest extends Unit
     public function testRelativePath(): void
     {
         $this->bundle->method('getTags')->willReturnCallback(
-            static fn(): TagInterface =>  (new Js('/js/script1.js'))->relative()
+            static fn(): TagConfigInterface =>  (new Js('/js/script1.js'))->relative()
         );
 
         $this->manager->addBundle($this->bundle);

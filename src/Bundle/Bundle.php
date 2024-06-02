@@ -49,5 +49,8 @@ abstract class Bundle implements BundleInterface
     /**
      * @inheritDoc
      */
-    abstract public function getTags(): TagInterface|\SplFixedArray|array;
+    public function getTags(): TagInterface|\SplFixedArray|array
+    {
+        return [];
+    }
 }

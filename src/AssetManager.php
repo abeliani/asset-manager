@@ -104,8 +104,13 @@ final class AssetManager implements AssetManagerInterface
             array_walk($distPaths, fn (&$src) => $src = sprintf('%s/%s', $bundlePath, $src));
 
             foreach ($this->processBundle($bundle, $processed) as $bundleFilePath => $tagExtractor) {
-                $publicUrl = str_replace(dirname($this->buildFilePath, 2), '', $bundleFilePath);
-                $itemPath = $tagExtractor->isRelative() ? $publicUrl : sprintf('//%s%s', $this->host, $publicUrl);
+                if ($tagExtractor->isRemote()) {
+                    $itemPath = $bundleFilePath;
+                } else {
+                    $publicUrl = str_replace(dirname($this->buildFilePath, 2), '', $bundleFilePath);
+                    $itemPath = $tagExtractor->isRelative() ? $publicUrl : sprintf('//%s%s', $this->host, $publicUrl);
+                }
+
                 $itemPath = $tagExtractor->isWithTimestamp() ? sprintf('%s?ts=%d', $itemPath, time()) : $itemPath;
 
                 echo $tagExtractor->render($itemPath), PHP_EOL;
@@ -206,28 +211,33 @@ final class AssetManager implements AssetManagerInterface
         foreach ($tags as $tag) {
             $tag->extractor($extractor = clone $te);
             $src = is_string($extractor->getSrc()) ? $extractor->getSrc() : $extractor->getSrc()[0];
-            $srcInfo = pathinfo($src);
-            $bundleDir = sprintf('%s%s', $this->getAssertsPath($bundleClass), $srcInfo['dirname']);
 
-            if (!is_dir($bundleDir) && !mkdir($bundleDir, $this->buildDirMode, true)) {
-                throw new \RuntimeException('Filed to create public bundle directory');
-            }
+            if ($extractor->isRemote()) {
+                $bundleFilePath = $src;
+            } else {
+                $srcInfo = pathinfo($src);
+                $bundleDir = sprintf('%s%s', $this->getAssertsPath($bundleClass), $srcInfo['dirname']);
 
-            $bundleFilePath = "{$bundleDir}/{$srcInfo['basename']}";
-
-            if (!file_exists($bundleFilePath) || (filemtime($bundleFilePath) > $this->buildTime)) {
-                $bundlePath = $bundle->name() ? ($bundle->getPath() . "/{$bundle->name()}/") : $bundle->getPath();
-
-                if (!$bundlePath) {
-                    throw new \RuntimeException(sprintf('Filed to determine path of %s', get_class($bundle)));
+                if (!is_dir($bundleDir) && !mkdir($bundleDir, $this->buildDirMode, true)) {
+                    throw new \RuntimeException('Filed to create public bundle directory');
                 }
 
-                if (!$handled = $extractor->handle(new TagHandler($bundlePath))) {
-                    continue;
-                }
+                $bundleFilePath = "{$bundleDir}/{$srcInfo['basename']}";
 
-                if (!file_put_contents($bundleFilePath, $handled)) {
-                    throw new \RuntimeException('Filed to create public bundle file');
+                if (!file_exists($bundleFilePath) || (filemtime($bundleFilePath) > $this->buildTime)) {
+                    $bundlePath = $bundle->name() ? ($bundle->getPath() . "/{$bundle->name()}/") : $bundle->getPath();
+
+                    if (!$bundlePath) {
+                        throw new \RuntimeException(sprintf('Filed to determine path of %s', get_class($bundle)));
+                    }
+
+                    if (!$handled = $extractor->handle(new TagHandler($bundlePath))) {
+                        continue;
+                    }
+
+                    if (!file_put_contents($bundleFilePath, $handled)) {
+                        throw new \RuntimeException('Filed to create public bundle file');
+                    }
                 }
             }
 

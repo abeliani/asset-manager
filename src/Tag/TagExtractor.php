@@ -17,6 +17,7 @@ final class TagExtractor implements TagExtractorInterface
 {
     private ?ProtoTag $protoTag;
     private ?array $src;
+    private ?bool $remote;
     private ?string $tagClass;
     private ?bool $minimize;
     private ?bool $relative;
@@ -25,6 +26,13 @@ final class TagExtractor implements TagExtractorInterface
     public function setProtoTag(ProtoTag $protoTag): self
     {
         $this->protoTag = $protoTag;
+
+        return $this;
+    }
+
+    public function setRemote(bool $remote): self
+    {
+        $this->remote = $remote;
 
         return $this;
     }
@@ -88,6 +96,11 @@ final class TagExtractor implements TagExtractorInterface
     public function getTagClass(): string
     {
         return $this->tagClass;
+    }
+
+    public function isRemote(): bool
+    {
+        return $this->remote;
     }
 
     public function isOptimize(): bool

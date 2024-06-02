@@ -21,6 +21,13 @@ interface TagConfigInterface
     public function minimize(): TagConfigInterface;
 
     /**
+     * if is remote, it will only be included in a tag
+     *
+     * @return self
+     */
+    public function remote(): self;
+
+    /**
      * If is relative a host will not be added
      * An example:
      *

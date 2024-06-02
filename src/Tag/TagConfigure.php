@@ -18,6 +18,7 @@ abstract class TagConfigure implements TagConfigInterface
     protected ProtoTag $protoTag;
 
     private array $src;
+    private bool $remote = false;
     private bool $minimize = false;
     private bool $relative = false;
     private bool $withTimestamp = false;
@@ -34,6 +35,16 @@ abstract class TagConfigure implements TagConfigInterface
     public function addAttr(string $name, mixed $value = null): self
     {
         $this->protoTag->addAttribute($name, $value);
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function remote(): self
+    {
+        $this->remote = true;
 
         return $this;
     }
@@ -75,6 +86,7 @@ abstract class TagConfigure implements TagConfigInterface
     {
         $extractor
             ->setSrc($this->src)
+            ->setRemote($this->remote)
             ->setProtoTag($this->protoTag)
             ->setMinimize($this->minimize)
             ->setRelative($this->relative)

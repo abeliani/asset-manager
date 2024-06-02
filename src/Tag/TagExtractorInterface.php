@@ -50,6 +50,11 @@ interface TagExtractorInterface
     public function isWithTimestamp(): bool;
 
     /**
+     * @return bool
+     */
+    public function isREmote(): bool;
+
+    /**
      * @param TagHandler $processor
      * @return string|null
      */

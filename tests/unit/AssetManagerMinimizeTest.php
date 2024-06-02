@@ -30,7 +30,7 @@ class AssetManagerMinimizeTest extends Unit
     protected function setUp(): void
     {
         $this->bundle = $this->createMock(BundleInterface::class);
-        $this->bundle->method('getPath')->willReturn(codecept_data_dir());
+        $this->bundle->method('getPath')->willReturn(codecept_data_dir('concrete'));
         $this->bundleClass = get_class($this->bundle);
 
         parent::setUp();
@@ -53,53 +53,53 @@ class AssetManagerMinimizeTest extends Unit
 
     public function testOptimizeCss(): void
     {
-        $tag = new Css('/concrete/css/style2.css');
+        $tag = new Css('/css/style2.css');
 
         $this->bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tag);
         $this->manager->addBundle($this->bundle);
 
-        $this->assertStringContainsString('/concrete/css/style2.css', $this->manager->process());
+        $this->assertStringContainsString('/css/style2.css', $this->manager->process());
 
-        $this->tester->openFile("{$this->manager->getAssertsPath($this->bundleClass)}/concrete/css/style2.css");
+        $this->tester->openFile("{$this->manager->getAssertsPath($this->bundleClass)}/css/style2.css");
         $this->tester->seeFileContentsEqual('menu{margin:3px 4px 3px 4px}');
     }
 
     public function testMinimizeCss(): void
     {
-        $tagMinimized = (new Css('/concrete/css/style2.css'))->minimize();
+        $tagMinimized = (new Css('/css/style2.css'))->minimize();
 
         $this->bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tagMinimized);
         $this->manager->addBundle($this->bundle);
 
-        $this->assertStringContainsString('/concrete/css/style2.css', $this->manager->process());
+        $this->assertStringContainsString('/css/style2.css', $this->manager->process());
 
-        $this->tester->openFile("{$this->manager->getAssertsPath($this->bundleClass)}/concrete/css/style2.css");
+        $this->tester->openFile("{$this->manager->getAssertsPath($this->bundleClass)}/css/style2.css");
         $this->tester->seeFileContentsEqual('menu{margin:3px 4px}');
     }
 
     public function testOptimizeJs(): void
     {
-        $tag = new Js('/concrete/js/plugin.js');
+        $tag = new Js('/js/plugin.js');
 
         $this->bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tag);
         $this->manager->addBundle($this->bundle);
 
-        $this->assertStringContainsString('/concrete/js/plugin.js', $this->manager->process());
+        $this->assertStringContainsString('/js/plugin.js', $this->manager->process());
 
-        $this->tester->openFile("{$this->manager->getAssertsPath($this->bundleClass)}/concrete/js/plugin.js");
+        $this->tester->openFile("{$this->manager->getAssertsPath($this->bundleClass)}/js/plugin.js");
         $this->tester->seeFileContentsEqual("function test(){console.log('Minimized')}test()");
     }
 
     public function testMinimizeJs(): void
     {
-        $tagMinimized = (new Js('/concrete/js/plugin.js'))->minimize();
+        $tagMinimized = (new Js('/js/plugin.js'))->minimize();
 
         $this->bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tagMinimized);
         $this->manager->addBundle($this->bundle);
 
-        $this->assertStringContainsString('/concrete/js/plugin.js', $this->manager->process());
+        $this->assertStringContainsString('/js/plugin.js', $this->manager->process());
 
-        $this->tester->openFile("{$this->manager->getAssertsPath($this->bundleClass)}/concrete/js/plugin.js");
+        $this->tester->openFile("{$this->manager->getAssertsPath($this->bundleClass)}/js/plugin.js");
         $this->tester->seeFileContentsEqual("function o_1(){console.log('Minimized')}o_1()");
     }
 }

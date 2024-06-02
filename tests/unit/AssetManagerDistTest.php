@@ -29,7 +29,7 @@ class AssetManagerDistTest extends Unit
     protected function setUp(): void
     {
         $this->bundle = $this->createMock(BundleInterface::class);
-        $this->bundle->method('getPath')->willReturn(codecept_data_dir());
+        $this->bundle->method('getPath')->willReturn(codecept_data_dir('concrete'));
         $this->bundleClass = get_class($this->bundle);
 
         parent::setUp();
@@ -52,32 +52,30 @@ class AssetManagerDistTest extends Unit
 
     public function testCopyDist(): void
     {
-        $tag = new Css('/concrete/css/style2.css');
+        $tag = new Css('/css/style2.css');
         $this->bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tag);
-        $this->bundle->method('getPath')->willReturn(codecept_data_dir());
-        $this->bundle->method('getDistPaths')->willReturn(['concrete/css/dist']);
+        $this->bundle->method('getDistPaths')->willReturn(['/css/dist']);
         $this->manager->addBundle($this->bundle);
 
-        $this->assertStringContainsString('/concrete/css/style2.css', $this->manager->process());
-        $this->tester->seeFileFound("{$this->manager->getAssertsPath($this->bundleClass)}/concrete/css/dist/README.txt");
+        $this->assertStringContainsString('/css/style2.css', $this->manager->process());
+        $this->tester->seeFileFound("{$this->manager->getAssertsPath($this->bundleClass)}/css/dist/README.txt");
     }
 
     public function testCopyDistNotOptimized(): void
     {
-        $tag = new Css('/concrete/css/style2.css');
+        $tag = new Css('/css/style2.css');
         $this->bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tag);
-        $this->bundle->method('getPath')->willReturn(codecept_data_dir());
-        $this->bundle->method('getDistPaths')->willReturn(['concrete/css']);
+        $this->bundle->method('getDistPaths')->willReturn(['css']);
         $this->manager->addBundle($this->bundle);
 
-        $this->assertStringContainsString('/concrete/css/style2.css', $this->manager->process());
+        $this->assertStringContainsString('/css/style2.css', $this->manager->process());
 
-        $optimized = "{$this->manager->getAssertsPath($this->bundleClass)}/concrete/css/style2.css";
-        $distCopied = "{$this->manager->getAssertsPath($this->bundleClass)}/concrete/css/style1.css";
+        $optimized = "{$this->manager->getAssertsPath($this->bundleClass)}/css/style2.css";
+        $distCopied = "{$this->manager->getAssertsPath($this->bundleClass)}/css/style1.css";
 
         $this->tester->seeFileFound($optimized);
         $this->tester->seeFileFound($distCopied);
-        $this->tester->seeFileFound('*', "{$this->manager->getAssertsPath($this->bundleClass)}/concrete/css/dist");
+        $this->tester->seeFileFound('*', "{$this->manager->getAssertsPath($this->bundleClass)}/css/dist");
 
         $this->tester->openFile($optimized);
         $this->assertNotTrue(is_link($optimized));

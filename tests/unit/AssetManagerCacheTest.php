@@ -40,9 +40,9 @@ class AssetManagerCacheTest extends Unit
 
         $bundle = $this->createMock(BundleInterface::class);
         $bundle->method('getTags')
-            ->willReturnCallback(static fn(): TagInterface => new Css('/concrete/css/style1.css'));
+            ->willReturnCallback(static fn(): TagInterface => new Css('/css/style1.css'));
         $bundle->method('getPath')
-            ->willReturn(codecept_data_dir());
+            ->willReturn(codecept_data_dir('concrete'));
 
         $manager->addBundle($bundle);
 
@@ -66,9 +66,9 @@ class AssetManagerCacheTest extends Unit
 
         $bundle = $this->createMock(BundleInterface::class);
         $bundle->method('getTags')
-            ->willReturnCallback(static fn(): TagInterface => new Css('/concrete/css/style1.css'));
+            ->willReturnCallback(static fn(): TagInterface => new Css('/css/style1.css'));
         $bundle->method('getPath')
-            ->willReturn(codecept_data_dir());
+            ->willReturn(codecept_data_dir('concrete'));
 
         $manager->addBundle($bundle);
 

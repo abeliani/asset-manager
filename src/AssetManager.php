@@ -202,17 +202,14 @@ final class AssetManager implements AssetManagerInterface
 
         foreach ($tags as $tag) {
             $src = is_string($tag->getSrc()) ? $tag->getSrc() : $tag->getSrc()[0];
-            $pi = pathinfo($src);
-
-            $bundleDir = $this->getAssertsPath(get_class($bundle))
-                . ($bundle->name() ? "/{$bundle->name()}/" : '/')
-                . ltrim($pi['dirname'], '/');
+            $srcInfo = pathinfo($src);
+            $bundleDir = sprintf('%s%s', $this->getAssertsPath($bundleClass), $srcInfo['dirname']);
 
             if (!is_dir($bundleDir) && !mkdir($bundleDir, $this->buildDirMode, true)) {
                 throw new \RuntimeException('Filed to create public bundle directory');
             }
 
-            $bundleFilePath = sprintf('%s/%s', $bundleDir, $pi['basename']);
+            $bundleFilePath = "{$bundleDir}/{$srcInfo['basename']}";
 
             if (!file_exists($bundleFilePath) || ($this->buildTime > filemtime($bundleFilePath))) {
                 $bundlePath = $bundle->name() ? ($bundle->getPath() . "/{$bundle->name()}/") : $bundle->getPath();

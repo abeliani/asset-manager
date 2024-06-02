@@ -18,8 +18,9 @@ use Abeliani\AssetManager\Tag\Css;
 use Abeliani\AssetManager\Tag\Js;
 use Abeliani\AssetManager\Tag\TagInterface;
 use Codeception\Test\Unit;
+use PHPUnit\Framework\MockObject\MockObject;
 
-class AssetManagerCategoryTest extends Unit
+class AssetManagerFolderTest extends Unit
 {
     protected \UnitTester $tester;
 
@@ -31,6 +32,7 @@ class AssetManagerCategoryTest extends Unit
             'https://localhost',
             codecept_output_dir('runtime'),
             codecept_output_dir('assets'),
+            false,
         );
     }
 
@@ -42,39 +44,59 @@ class AssetManagerCategoryTest extends Unit
     public function testGetTagsByCategory(): void
     {
         $tagCommon = new Css('/css/style1.css');
-        $bundle = $this->createMock(BundleInterface::class);
+        $bundle = $this->getUniqMock();
         $bundle->method('getPath')->willReturn(codecept_data_dir('concrete'));
         $bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tagCommon);
 
         $this->manager->addBundle($bundle);
 
         $tagTop = new Css('/css/style2.css');
-        $bundle = $this->createMock(BundleInterface::class);
-        $bundle->method('getPath')->willReturn(codecept_data_dir('concrete'));
-        $bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tagTop);
+        $bundle1 = $this->getUniqMock();
+        $bundle1->method('getPath')->willReturn(codecept_data_dir('concrete'));
+        $bundle1->method('getTags')->willReturnCallback(static fn(): TagInterface => $tagTop);
 
-        $this->manager->addBundle($bundle, AssetManagerInterface::CATEGORY_TOP);
+        $this->manager->addBundle($bundle1);
 
         $tagBottom = new Js('/js/script1.js');
-        $bundle = $this->createMock(BundleInterface::class);
-        $bundle->method('getPath')->willReturn(codecept_data_dir('concrete'));
-        $bundle->method('getTags')->willReturnCallback(static fn(): TagInterface => $tagBottom);
+        $bundle2 = $this->getUniqMock();
+        $bundle2->method('getPath')->willReturn(codecept_data_dir('concrete'));
+        $bundle2->method('getTags')->willReturnCallback(static fn(): TagInterface => $tagBottom);
 
-        $this->manager->addBundle($bundle, AssetManagerInterface::CATEGORY_BOTTOM);
+        $this->manager->addBundle($bundle2, AssetManagerInterface::CATEGORY_BOTTOM);
 
         $this->assertStringContainsString(
             '/css/style1.css',
             $this->manager->process()
         );
 
+        $assetPatPath1 = $this->manager->getAssertsPath(get_class($bundle));
+
         $this->assertStringContainsString(
             '/css/style2.css',
-            $this->manager->process(AssetManagerInterface::CATEGORY_TOP)
+            $this->manager->process()
         );
+
+        $assetPatPath2 = $this->manager->getAssertsPath(get_class($bundle1));
 
         $this->assertStringContainsString(
             '/js/script1.js',
             $this->manager->process(AssetManagerInterface::CATEGORY_BOTTOM)
         );
+
+        $assetPatPath3 = $this->manager->getAssertsPath(get_class($bundle2));
+
+        $this->assertNotEquals($assetPatPath1, $assetPatPath2);
+        $this->assertNotEquals($assetPatPath2, $assetPatPath3);
+
+        $this->tester->assertDirectoryExists($assetPatPath1);
+        $this->tester->assertDirectoryExists($assetPatPath2);
+        $this->tester->assertDirectoryExists($assetPatPath3);
+    }
+
+    private function getUniqMock(): MockObject|BundleInterface
+    {
+        return $this->getMockBuilder(BundleInterface::class)
+            ->setMockClassName(sprintf('Mock_BundleInterface_%s', uniqid()))
+            ->getMock();
     }
 }

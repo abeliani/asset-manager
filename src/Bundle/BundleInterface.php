@@ -22,7 +22,7 @@ interface BundleInterface
 
     public function name(): string;
 
-    public function getDistPaths(): \SplFixedArray|array;
+    public function getDistPaths(): array;
 
     public function getPath(): string;
 

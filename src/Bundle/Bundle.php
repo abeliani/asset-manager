@@ -24,7 +24,7 @@ abstract class Bundle implements BundleInterface
         return '';
     }
 
-    public function getDistPaths(): \SplFixedArray|array
+    public function getDistPaths(): array
     {
         return [];
     }

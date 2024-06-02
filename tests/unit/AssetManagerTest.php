@@ -132,6 +132,21 @@ class AssetManagerTest extends Unit
         $this->tester->seeFileContentsEqual("console.log('am here')");
     }
 
+    public function testWithTimestamp(): void
+    {
+        $this->bundle->method('getTags')->willReturnCallback(
+            static fn(): array => [
+                (new Css('/css/style1.css'))->withTimeStamp(),
+                (new Js('/js/script2.js'))->withTimeStamp(),
+            ]
+        );
+
+        $this->manager->addBundle($this->bundle);
+
+        $this->assertMatchesRegularExpression('~/js/script2\.js\?ts=\d+~', $this->manager->process());
+        $this->assertMatchesRegularExpression('~/css/style1\.css\?ts=\d+~', $this->manager->process());
+    }
+
     public function testRelativePath(): void
     {
         $this->bundle->method('getTags')->willReturnCallback(

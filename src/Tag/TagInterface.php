@@ -43,6 +43,16 @@ interface TagInterface
     public function relative(): self;
 
     /**
+     * Add query part to a tag with timestamp
+     * An example:
+     *
+     *      /asset/qwer1/style.css?ts=12345678
+     *
+     * @return TagInterface
+     */
+    public function withTimeStamp(): self;
+
+    /**
      * Add attribute to tag
      * An example:
      *
@@ -76,8 +86,13 @@ interface TagInterface
     public function isOptimize(): bool;
 
     /**
+     * @return bool
+     */
+    public function isWithTimestamp(): bool;
+
+    /**
      * @param TagHandler $processor
-     * @return string
+     * @return string|null
      */
     public function handle(TagHandler $processor): ?string;
 }

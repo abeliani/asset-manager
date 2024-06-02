@@ -20,6 +20,7 @@ abstract class Tag implements TagInterface
     private array $src;
     private bool $minimize = false;
     private bool $relative = false;
+    private bool $withTimestamp = false;
 
     public function __construct(string ...$src)
     {
@@ -66,6 +67,16 @@ abstract class Tag implements TagInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function withTimeStamp(): self
+    {
+        $this->withTimestamp = true;
+
+        return $this;
+    }
+
+    /**
      * @throws \Exception
      */
     public function handle(TagHandler $processor): ?string
@@ -86,6 +97,11 @@ abstract class Tag implements TagInterface
     public function isRelative(): bool
     {
         return $this->relative;
+    }
+
+    public function isWithTimestamp(): bool
+    {
+        return $this->withTimestamp;
     }
 
     abstract protected function initProto(): void;

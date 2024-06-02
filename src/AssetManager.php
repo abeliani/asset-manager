@@ -105,6 +105,7 @@ final class AssetManager implements AssetManagerInterface
             foreach ($this->processBundle($bundle, $processed) as $bundleFilePath => $tag) {
                 $publicUrl = str_replace(dirname($this->buildFilePath, 2), '', $bundleFilePath);
                 $itemPath = $tag->isRelative() ? $publicUrl : sprintf('//%s%s', $this->host, $publicUrl);
+                $itemPath = $tag->isWithTimestamp() ? sprintf('%s?ts=%d', $itemPath, time()) : $itemPath;
 
                 echo $tag->render($itemPath), PHP_EOL;
             }

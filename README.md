@@ -43,6 +43,12 @@ class MySiteBundle extends Bundle
             new Css('styles.css', 'reset.css', 'main.css'),
             new Js('app.js', 'utils.js', 'main.js'),
         ]; */
+        
+        // With timestamp
+        return [
+            (new Css('styles.css', 'reset.css', 'main.css'))->withTimestamp(),
+            (new Js('app.js', 'utils.js', 'main.js'))->withTimestamp(),
+        ];
     }
 }
 ```
@@ -56,8 +62,8 @@ By default, all styles or scripts will be optimized. If you want to do some mini
     public finction getTags(): array
     {
         reurn [
-             (new Css('styles.css', 'reset.css', 'main.css'))->minimize(),
-             (new Js('app.js', 'utils.js', 'main.js'))->minimize(),
+             (new Css('styles.css', 'reset.css', 'main.css'))->minimize()->withTimestamp(),
+             (new Js('app.js', 'utils.js', 'main.js'))->minimize()->withTimestamp(),
         ]; 
     }
 ```
@@ -65,8 +71,8 @@ By default, all styles or scripts will be optimized. If you want to do some mini
 In result, we will have here html to include our files
 
 ```html
-<link href="//localhost/assets/e30fdf4770/concrete/css/styles.css" rel="stylesheet">
-<script src="//localhost/assets/e30fdf4770/concrete/js/app.js"></script>
+<link href="//localhost/assets/e30fdf4770/concrete/css/styles.css?ts=1717328901" rel="stylesheet">
+<script src="//localhost/assets/e30fdf4770/concrete/js/app.js?ts=1717328901"></script>
 ```
 
 ## Installation

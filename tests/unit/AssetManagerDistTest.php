@@ -22,6 +22,7 @@ class AssetManagerDistTest extends Unit
 {
     protected \UnitTester $tester;
 
+    private readonly string $bundleClass;
     private readonly AssetManager $manager;
     private readonly BundleInterface|MockObject $bundle;
 
@@ -29,6 +30,7 @@ class AssetManagerDistTest extends Unit
     {
         $this->bundle = $this->createMock(BundleInterface::class);
         $this->bundle->method('getPath')->willReturn(codecept_data_dir());
+        $this->bundleClass = get_class($this->bundle);
 
         parent::setUp();
     }
@@ -57,7 +59,7 @@ class AssetManagerDistTest extends Unit
         $this->manager->addBundle($this->bundle);
 
         $this->assertStringContainsString('/concrete/css/style2.css', $this->manager->process());
-        $this->tester->seeFileFound("{$this->manager->getAssertsPath()}/concrete/css/dist/README.txt");
+        $this->tester->seeFileFound("{$this->manager->getAssertsPath($this->bundleClass)}/concrete/css/dist/README.txt");
     }
 
     public function testCopyDistNotOptimized(): void
@@ -70,9 +72,12 @@ class AssetManagerDistTest extends Unit
 
         $this->assertStringContainsString('/concrete/css/style2.css', $this->manager->process());
 
-        $this->tester->seeFileFound($optimized = "{$this->manager->getAssertsPath()}/concrete/css/style2.css");
-        $this->tester->seeFileFound($distCopied = "{$this->manager->getAssertsPath()}/concrete/css/style1.css");
-        $this->tester->seeFileFound('*', "{$this->manager->getAssertsPath()}/concrete/css/dist");
+        $optimized = "{$this->manager->getAssertsPath($this->bundleClass)}/concrete/css/style2.css";
+        $distCopied = "{$this->manager->getAssertsPath($this->bundleClass)}/concrete/css/style1.css";
+
+        $this->tester->seeFileFound($optimized);
+        $this->tester->seeFileFound($distCopied);
+        $this->tester->seeFileFound('*', "{$this->manager->getAssertsPath($this->bundleClass)}/concrete/css/dist");
 
         $this->tester->openFile($optimized);
         $this->assertNotTrue(is_link($optimized));

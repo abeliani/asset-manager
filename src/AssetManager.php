@@ -26,7 +26,7 @@ final class AssetManager implements AssetManagerInterface
     private string $buildFilePath;
 
     private array $bundles = [];
-    private ?string $assetPath = null;
+    private array $assetPaths = [];
 
     public function __construct(
         string $host,
@@ -73,10 +73,6 @@ final class AssetManager implements AssetManagerInterface
     {
         $processed = $distExcludedPaths = [];
 
-        if (!file_exists($this->getAssertsPath()) && !mkdir($this->getAssertsPath(), $this->buildDirMode, true)) {
-            throw new \RuntimeException('Filed to create public bundle directory');
-        }
-
         if (empty($this->bundles)) {
             return '';
         }
@@ -95,6 +91,13 @@ final class AssetManager implements AssetManagerInterface
 
         ob_start();
         foreach ($bundles as $bundle) {
+            $bundleClass = get_class($bundle);
+
+            if (!file_exists($this->getAssertsPath($bundleClass)) &&
+                !mkdir($this->getAssertsPath($bundleClass), $this->buildDirMode, true)) {
+                throw new \RuntimeException('Filed to create public bundle directory');
+            }
+
             $distPaths = $bundle->getDistPaths();
             $bundlePath = $bundle->name() ? ($bundle->getPath() . "/{$bundle->name()}") : $bundle->getPath();
             array_walk($distPaths, fn (&$src) => $src = sprintf('%s/%s', $bundlePath, $src));
@@ -108,7 +111,7 @@ final class AssetManager implements AssetManagerInterface
 
             foreach ($distPaths as $dist) {
                 if (!file_exists($dist)) {
-                    throw new \LogicException(sprintf('Bundle `%s` path not found: `%s`', get_class($bundle), $dist));
+                    throw new \LogicException(sprintf('Bundle `%s` path not found: `%s`', $bundleClass, $dist));
                 }
 
                 /** @var \SplFileInfo[] $paths */
@@ -118,7 +121,7 @@ final class AssetManager implements AssetManagerInterface
                 );
                 foreach ($paths as $path) {
                     $distRelative = str_replace($bundle->getPath(), '', $path->getRealPath());
-                    $publicDistPath = sprintf('%s/%s', $this->assetPath, ltrim($distRelative, '/'));
+                    $publicDistPath = sprintf('%s/%s', $this->getAssertsPath($bundleClass), ltrim($distRelative, '/'));
 
                     if (in_array($distRelative, $distExcludedPaths)) {
                         continue;
@@ -155,13 +158,14 @@ final class AssetManager implements AssetManagerInterface
         return $build;
     }
 
-    public function getAssertsPath(): string
+    public function getAssertsPath(string $bundleClass): string
     {
-        if ($this->assetPath === null) {
-            $this->assetPath = sprintf('%s/%s', $this->publicPath, $this->getAssertDirectorySalt());
+        if (!array_key_exists($bundleClass, $this->assetPaths)) {
+            $this->assetPaths[$bundleClass] =
+                sprintf('%s/%s', $this->publicPath, $this->getAssertDirectorySalt($bundleClass));
         }
 
-        return $this->assetPath;
+        return $this->assetPaths[$bundleClass];
     }
 
     /**
@@ -200,7 +204,7 @@ final class AssetManager implements AssetManagerInterface
             $src = is_string($tag->getSrc()) ? $tag->getSrc() : $tag->getSrc()[0];
             $pi = pathinfo($src);
 
-            $bundleDir = $this->getAssertsPath()
+            $bundleDir = $this->getAssertsPath(get_class($bundle))
                 . ($bundle->name() ? "/{$bundle->name()}/" : '/')
                 . ltrim($pi['dirname'], '/');
 
@@ -230,8 +234,8 @@ final class AssetManager implements AssetManagerInterface
         }
     }
 
-    private function getAssertDirectorySalt(): string
+    private function getAssertDirectorySalt(string $bundleClass): string
     {
-        return substr(md5((string) $this->buildTime), 0, 10);
+        return substr(md5(sprintf('%s%d', $bundleClass, $this->buildTime)), 0, 10);
     }
 }

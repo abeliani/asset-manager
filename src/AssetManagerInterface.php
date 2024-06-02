@@ -23,5 +23,5 @@ interface AssetManagerInterface
 
     public function process(string $category): string;
 
-    public function getAssertsPath(): string;
+    public function getAssertsPath(string $bundleClass): string;
 }

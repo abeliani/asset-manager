@@ -23,6 +23,7 @@ class AssetManagerTest extends Unit
 {
     protected \UnitTester $tester;
 
+    private readonly string $bundleClass;
     private readonly AssetManager $manager;
     private readonly BundleInterface|MockObject $bundle;
 
@@ -30,6 +31,7 @@ class AssetManagerTest extends Unit
     {
         $this->bundle = $this->createMock(BundleInterface::class);
         $this->bundle->method('getPath')->willReturn(codecept_data_dir());
+        $this->bundleClass = get_class($this->bundle);
 
         parent::setUp();
     }
@@ -60,7 +62,7 @@ class AssetManagerTest extends Unit
         $tagPattern = '~<link href="//localhost/assets/\w+/concrete/css/style1\.css" rel="stylesheet">~';
         $this->assertMatchesRegularExpression($tagPattern, $this->manager->process());
 
-        $this->tester->openFile("{$this->manager->getAssertsPath()}/{$cssPath}");
+        $this->tester->openFile("{$this->manager->getAssertsPath($this->bundleClass)}/{$cssPath}");
         $this->tester->seeFileContentsEqual('body{margin:0}');
     }
 
@@ -68,7 +70,6 @@ class AssetManagerTest extends Unit
     {
         $firstCssPath = '/concrete/css/style1.css';
         $secondCssPath = '/concrete/css/style2.css';
-        $assetCssPath = "{$this->manager->getAssertsPath()}/{$firstCssPath}";
 
         $this->bundle->method('getTags')
             ->willReturnCallback(static fn(): TagInterface => new Css($firstCssPath, $secondCssPath));
@@ -78,7 +79,7 @@ class AssetManagerTest extends Unit
         $this->assertStringContainsString('/concrete/css/style1.css', $this->manager->process());
         $this->assertStringNotContainsString('/concrete/css/style2.css', $this->manager->process());
 
-        $this->tester->openFile($assetCssPath);
+        $this->tester->openFile("{$this->manager->getAssertsPath($this->bundleClass)}/{$firstCssPath}");
         $this->tester->seeFileContentsEqual('body{margin:0}menu{margin:3px 4px 3px 4px}');
     }
 
@@ -97,7 +98,6 @@ class AssetManagerTest extends Unit
     {
         $resultScriptPath = '/concrete/js/script1.js';
         $scripts = [$resultScriptPath, '/concrete/js/script2.js'];
-        $assetJsPath = "{$this->manager->getAssertsPath()}{$resultScriptPath}";
 
         $this->bundle->method('getTags')
             ->willReturnCallback(static fn(): TagInterface => (new Js(...$scripts)));
@@ -107,7 +107,7 @@ class AssetManagerTest extends Unit
         $this->assertStringContainsString('/concrete/js/script1.js', $this->manager->process());
         $this->assertStringNotContainsString('/concrete/js/script2.js', $this->manager->process());
 
-        $this->tester->openFile($assetJsPath);
+        $this->tester->openFile("{$this->manager->getAssertsPath($this->bundleClass)}{$resultScriptPath}");
         $this->tester->seeFileContentsEqual("alert('Hi!');console.log('am here')");
     }
 
@@ -122,16 +122,13 @@ class AssetManagerTest extends Unit
 
         $this->manager->addBundle($this->bundle);
 
-        $assetJs1Path = "{$this->manager->getAssertsPath()}/concrete/js/script1.js";
-        $assetJs2Path = "{$this->manager->getAssertsPath()}/concrete/js/script2.js";
-
         $this->assertStringContainsString('/concrete/js/script1.js', $this->manager->process());
         $this->assertStringContainsString('/concrete/js/script2.js', $this->manager->process());
 
-        $this->tester->openFile($assetJs1Path);
+        $this->tester->openFile("{$this->manager->getAssertsPath($this->bundleClass)}/concrete/js/script1.js");
         $this->tester->seeFileContentsEqual("alert('Hi!')");
 
-        $this->tester->openFile($assetJs2Path);
+        $this->tester->openFile("{$this->manager->getAssertsPath($this->bundleClass)}/concrete/js/script2.js");
         $this->tester->seeFileContentsEqual("console.log('am here')");
     }
 

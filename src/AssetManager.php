@@ -213,7 +213,7 @@ final class AssetManager implements AssetManagerInterface
             $src = is_string($extractor->getSrc()) ? $extractor->getSrc() : $extractor->getSrc()[0];
 
             if ($extractor->isRemote()) {
-                $bundleFilePath = $src;
+                $assetFilePath = $src;
             } else {
                 $srcInfo = pathinfo($src);
                 $bundleDir = sprintf('%s%s', $this->getAssertsPath($bundleClass), $srcInfo['dirname']);
@@ -222,26 +222,26 @@ final class AssetManager implements AssetManagerInterface
                     throw new \RuntimeException('Filed to create public bundle directory');
                 }
 
-                $bundleFilePath = "{$bundleDir}/{$srcInfo['basename']}";
+                $assetFilePath = "{$bundleDir}/{$srcInfo['basename']}";
+                $bundlePath = $bundle->name() ? ($bundle->getPath() . "/{$bundle->name()}/") : $bundle->getPath();
+                $bundleFilePath = "{$bundlePath}{$src}";
 
-                if (!file_exists($bundleFilePath) || (filemtime($bundleFilePath) > $this->buildTime)) {
-                    $bundlePath = $bundle->name() ? ($bundle->getPath() . "/{$bundle->name()}/") : $bundle->getPath();
+                if (!$bundlePath) {
+                    throw new \RuntimeException(sprintf('Filed to determine path of %s', get_class($bundle)));
+                }
 
-                    if (!$bundlePath) {
-                        throw new \RuntimeException(sprintf('Filed to determine path of %s', get_class($bundle)));
-                    }
-
+                if (!file_exists($assetFilePath) || (filemtime($bundleFilePath) > filemtime($assetFilePath))) {
                     if (!$handled = $extractor->handle(new TagHandler($bundlePath))) {
                         continue;
                     }
 
-                    if (!file_put_contents($bundleFilePath, $handled)) {
+                    if (!file_put_contents($assetFilePath, $handled)) {
                         throw new \RuntimeException('Filed to create public bundle file');
                     }
                 }
             }
 
-            yield $bundleFilePath => $extractor;
+            yield $assetFilePath => $extractor;
         }
     }
 

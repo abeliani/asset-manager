@@ -72,12 +72,12 @@ class AssetManagerCacheTest extends Unit
 
         $manager->addBundle($bundle);
 
-        $bundle->expects($this->atLeast(1))->method('getPath');
-        $bundle->expects($this->atLeast(1))->method('getTags');
+        $bundle->expects($this->exactly(4))->method('getPath');
+        $bundle->expects($this->exactly(4))->method('getTags');
         $manager->process();
 
-        $bundle->expects($this->exactly(1))->method('getPath');
-        $bundle->expects($this->atLeast(1))->method('getTags');
+        $bundle->expects($this->exactly(2))->method('getPath');
+        $bundle->expects($this->exactly(2))->method('getTags');
         $manager->process();
     }
 }
